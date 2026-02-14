@@ -1,30 +1,24 @@
-// --- SISTEMA DE MATCH KEY BISCAYNE V2 (Con Horarios) ---
-
-const usuario = {
-    nombre: "Martín",
-    rol: "padre",
-    edificio: "The Grand Bay",
-    horarios: ["tarde", "noche"] // Los horarios que necesitas
-};
-
 const baseDeDatos = [
-    { nombre: "Ana", rol: "baby sitter", edificio: "The Grand Bay", horarios: ["tarde"] },
-    { nombre: "Carla", rol: "baby sitter", edificio: "The Grand Bay", horarios: ["mañana"] },
-    { nombre: "Pedro", rol: "padre", edificio: "Key Colony", horarios: ["noche"] },
-    { nombre: "Lucía", rol: "baby sitter", edificio: "Ocean Club", horarios: ["tarde", "noche"] }
+    { nombre: "Ana", rol: "baby sitter", edificio: "The Grand Bay" },
+    { nombre: "Carla", rol: "baby sitter", edificio: "The Grand Bay" },
+    { nombre: "Lucía", rol: "baby sitter", edificio: "Ocean Club" },
+    { nombre: "Marta", rol: "baby sitter", edificio: "Key Colony" }
 ];
 
-function buscarMatchAvanzado(usuarioActual, listaUsuarios) {
-    return listaUsuarios.filter(u => {
-        const mismoEdificio = u.edificio === usuarioActual.edificio;
-        const rolOpuesto = u.rol !== usuarioActual.rol;
-        
-        // Esta línea busca si tienen al menos un horario en común
-        const coincidenciaHorario = u.horarios.some(h => usuarioActual.horarios.includes(h));
-
-        return mismoEdificio && rolOpuesto && coincidenciaHorario;
-    });
+function mostrarMatches() {
+    // 1. Capturamos qué edificio eligió el usuario en el HTML
+    const edificioSeleccionado = document.getElementById("selectorEdificio").value;
+    
+    // 2. Filtramos la base de datos
+    const matches = baseDeDatos.filter(persona => persona.edificio === edificioSeleccionado);
+    
+    // 3. Mostramos el resultado en la pantalla
+    const contenedor = document.getElementById("listaResultados");
+    
+    if (matches.length > 0) {
+        const nombres = matches.map(m => m.nombre).join(", ");
+        contenedor.innerHTML = `✅ Encontradas en ${edificioSeleccionado}: ${nombres}`;
+    } else {
+        contenedor.innerHTML = "❌ No hay baby sitters disponibles aquí todavía.";
+    }
 }
-
-const resultados = buscarMatchAvanzado(usuario, baseDeDatos);
-console.log("Matches precisos encontrados:", resultados);

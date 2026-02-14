@@ -2,25 +2,39 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Key Biscayne Baby Sitters</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KB Match - Key Biscayne</title>
     <style>
-        body { font-family: Arial; padding: 20px; background-color: #f0f8ff; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        select, button { padding: 10px; margin-top: 10px; width: 100%; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #e3f2fd; display: flex; justify-content: center; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+        h1 { color: #0277bd; text-align: center; margin-bottom: 5px; }
+        p { color: #546e7a; text-align: center; font-size: 0.9em; }
+        select, button { padding: 12px; margin-top: 15px; width: 100%; border-radius: 8px; border: 1px solid #cfd8dc; font-size: 16px; }
+        button { background-color: #0288d1; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #01579b; }
+        #listaResultados { margin-top: 20px; padding: 10px; border-top: 1px solid #eee; text-align: center; }
     </style>
 </head>
 <body>
+
     <div class="card">
         <h1>KB Match 🏖️</h1>
-        <p>Selecciona tu edificio en Key Biscayne:</p>
-        <select id="edificios">
-            <option>The Grand Bay</option>
-            <option>Ocean Club</option>
-            <option>Key Colony</option>
-            <option>Commodore Club</option>
-            <option>Towers of Key Biscayne</option>
+        <p>Encuentra ayuda en tu edificio</p>
+        
+        <select id="selectorEdificio">
+            <option value="The Grand Bay">The Grand Bay</option>
+            <option value="Ocean Club">Ocean Club</option>
+            <option value="Key Colony">Key Colony</option>
+            <option value="Commodore Club">Commodore Club</option>
+            <option value="Towers of Key Biscayne">Towers of Key Biscayne</option>
+            <option value="Casa del Mar">Casa del Mar</option>
+            <option value="Mar Azul">Mar Azul</option>
         </select>
-        <button onclick="alert('Buscando en este edificio...')">Buscar Baby Sitter</button>
+        
+        <button onclick="mostrarMatches()">Buscar Baby Sitter</button>
+
+        <div id="listaResultados">
+            </div>
     </div>
 
     <script src="app.js"></script>
