@@ -33,10 +33,16 @@ function mostrarMatches() {
     const matches = baseDeDatos.filter(p => p.edificio === edificioSeleccionado);
     const contenedor = document.getElementById("listaResultados");
     
-    if (matches.length > 0) {
-        const lista = matches.map(m => `${m.nombre} (${m.rol})`).join(", ");
-        contenedor.innerHTML = `✅ Encontrados: ${lista}`;
+   if (matches.length > 0) {
+        // Creamos cajitas visuales para cada nombre
+        const htmlMatches = matches.map(m => `
+            <div class="match-item">
+                <strong>${m.nombre}</strong><br>
+                <small>${m.rol.toUpperCase()}</small>
+            </div>
+        `).join("");
+        contenedor.innerHTML = htmlMatches;
     } else {
-        contenedor.innerHTML = "❌ No hay nadie aquí aún.";
+        contenedor.innerHTML = "<p>❌ No hay nadie aquí aún.</p>";
     }
 }
