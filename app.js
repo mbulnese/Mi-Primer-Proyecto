@@ -1,29 +1,42 @@
-const baseDeDatos = [
+// 1. Intentar cargar los datos del "cajón" (localStorage)
+// Si no hay nada, usamos la lista básica de Ana y Sofia
+let datosGuardados = localStorage.getItem("usuariosKB");
+let baseDeDatos = datosGuardados ? JSON.parse(datosGuardados) : [
     { nombre: "Ana", rol: "baby sitter", edificio: "The Grand Bay" },
-    { nombre: "Carla", rol: "baby sitter", edificio: "The Grand Bay" },
-    { nombre: "Lucía", rol: "baby sitter", edificio: "Ocean Club" },
-    { nombre: "Marta", rol: "baby sitter", edificio: "Key Colony" },
-    { nombre: "Sofia", rol: "baby sitter", edificio: "Casa del Mar" },
-    { nombre: "Diego", rol: "padre", edificio: "Mar Azul" }
-    { nombre: "Martín", rol: "baby sitter", edificio: "Casa Del Mar" },
+    { nombre: "Sofia", rol: "baby sitter", edificio: "Casa del Mar" }
 ];
 
-// ... (el resto de la función mostrarMatches se mantiene igual)
+function registrarUsuario() {
+    const nombre = document.getElementById("regNombre").value;
+    const rol = document.getElementById("regRol").value;
+    const edificio = document.getElementById("regEdificio").value;
+
+    if (nombre === "") {
+        alert("Por favor, escribe tu nombre");
+        return;
+    }
+
+    const nuevoUsuario = { nombre: nombre, rol: rol, edificio: edificio };
+    
+    // Agregamos al usuario a nuestra lista en memoria
+    baseDeDatos.push(nuevoUsuario);
+
+    // 2. ¡EL TRUCO! Guardamos la lista actualizada en el "cajón" permanente
+    localStorage.setItem("usuariosKB", JSON.stringify(baseDeDatos));
+
+    document.getElementById("regNombre").value = "";
+    alert("¡Registro exitoso y guardado permanentemente!");
+}
 
 function mostrarMatches() {
-    // 1. Capturamos qué edificio eligió el usuario en el HTML
     const edificioSeleccionado = document.getElementById("selectorEdificio").value;
-    
-    // 2. Filtramos la base de datos
-    const matches = baseDeDatos.filter(persona => persona.edificio === edificioSeleccionado);
-    
-    // 3. Mostramos el resultado en la pantalla
+    const matches = baseDeDatos.filter(p => p.edificio === edificioSeleccionado);
     const contenedor = document.getElementById("listaResultados");
     
     if (matches.length > 0) {
-        const nombres = matches.map(m => m.nombre).join(", ");
-        contenedor.innerHTML = `✅ Encontradas en ${edificioSeleccionado}: ${nombres}`;
+        const lista = matches.map(m => `${m.nombre} (${m.rol})`).join(", ");
+        contenedor.innerHTML = `✅ Encontrados: ${lista}`;
     } else {
-        contenedor.innerHTML = "❌ No hay baby sitters disponibles aquí todavía.";
+        contenedor.innerHTML = "❌ No hay nadie aquí aún.";
     }
 }

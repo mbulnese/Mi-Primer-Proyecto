@@ -17,24 +17,38 @@
 </head>
 <body>
 
-    <div class="card">
-        <h1>KB Match 🏖️</h1>
-        <p>Encuentra ayuda en tu edificio</p>
-        
-        <select id="selectorEdificio">
-            <option value="The Grand Bay">The Grand Bay</option>
-            <option value="Ocean Club">Ocean Club</option>
-            <option value="Key Colony">Key Colony</option>
-            <option value="Commodore Club">Commodore Club</option>
-            <option value="Towers of Key Biscayne">Towers of Key Biscayne</option>
-            <option value="Casa del Mar">Casa del Mar</option>
-            <option value="Mar Azul">Mar Azul</option>
-        </select>
-        
-        <button onclick="mostrarMatches()">Buscar Baby Sitter</button>
+    <<body>
+    <div class="container">
+        <div class="card">
+            <h1>Registro KB 📝</h1>
+            <p>¡Únete a la comunidad!</p>
+            <input type="text" id="regNombre" placeholder="Nombre completo">
+            <select id="regRol">
+                <option value="baby sitter">Soy Baby Sitter</option>
+                <option value="padre">Soy Padre/Madre</option>
+            </select>
+            <select id="regEdificio">
+                <option value="The Grand Bay">The Grand Bay</option>
+                <option value="Ocean Club">Ocean Club</option>
+                <option value="Key Colony">Key Colony</option>
+                <option value="Casa del Mar">Casa del Mar</option>
+                <option value="Mar Azul">Mar Azul</option>
+            </select>
+            <button onclick="registrarUsuario()" style="background-color: #4caf50;">Registrarme</button>
+        </div>
 
-        <div id="listaResultados">
-            </div>
+        <div class="card">
+            <h1>Buscador 🏖️</h1>
+            <select id="selectorEdificio">
+                <option value="The Grand Bay">The Grand Bay</option>
+                <option value="Ocean Club">Ocean Club</option>
+                <option value="Key Colony">Key Colony</option>
+                <option value="Casa del Mar">Casa del Mar</option>
+                <option value="Mar Azul">Mar Azul</option>
+            </select>
+            <button onclick="mostrarMatches()">Buscar en mi edificio</button>
+            <div id="listaResultados"></div>
+        </div>
     </div>
 
     <script src="app.js"></script>
