@@ -5,6 +5,7 @@ const baseDeDatos = [
     { nombre: "Marta", rol: "baby sitter", edificio: "Key Colony" },
     { nombre: "Sofia", rol: "baby sitter", edificio: "Casa del Mar" },
     { nombre: "Diego", rol: "padre", edificio: "Mar Azul" }
+    { nombre: "Martín", rol: "baby sitter", edificio: "Casa Del Mar" },
 ];
 
 // ... (el resto de la función mostrarMatches se mantiene igual)
