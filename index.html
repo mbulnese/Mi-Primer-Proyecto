@@ -1,160 +1,422 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KB Match - Key Biscayne</title>
-   <style>
-    :root {
-        --primary: #0288d1;
-        --secondary: #4caf50;
-        --bg: #f5f7fa;
-        --text: #2c3e50;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KB Match - Key Biscayne</title>
+
+  <style>
+    :root{
+      --primary:#0ea5e9;     /* sky-500 */
+      --primary2:#0284c7;    /* sky-600 */
+      --green:#16a34a;       /* green-600 */
+      --danger:#ef4444;      /* red-500 */
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#0f172a;        /* slate-900 */
+      --muted:#64748b;       /* slate-500 */
+      --border:#e2e8f0;      /* slate-200 */
+      --shadow:0 18px 40px rgba(15,23,42,.08);
+      --radius:22px;
     }
 
-    body { 
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-        background-color: var(--bg); 
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        color: var(--text);
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(14,165,233,.18), transparent 60%),
+        radial-gradient(900px 600px at 90% 0%, rgba(22,163,74,.14), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     }
 
-    .container {
-        width: 100%;
-        max-width: 400px; /* Tamaño típico de un celular */
-        padding: 20px;
+    .container{
+      width:100%;
+      max-width:420px;
+      padding:20px 16px 28px;
     }
 
-    .card { 
-        background: white; 
-        padding: 20px; 
-        border-radius: 20px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-        margin-bottom: 20px;
+    /* Top bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin: 6px 2px 14px;
+    }
+    .brand{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      display:grid;place-items:center;
+      background: linear-gradient(135deg, rgba(14,165,233,.95), rgba(2,132,199,.95));
+      box-shadow: 0 10px 25px rgba(14,165,233,.25);
+      color:white;
+      font-size:20px;
+    }
+    .brand h2{
+      margin:0;
+      font-size:16px;
+      line-height:1.1;
+      letter-spacing:-.2px;
+    }
+    .brand small{
+      color:var(--muted);
+      display:block;
+      margin-top:2px;
+      font-size:12px;
+    }
+    .chip{
+      font-size:12px;
+      color:rgba(2,132,199,.95);
+      background: rgba(14,165,233,.12);
+      border:1px solid rgba(14,165,233,.22);
+      padding:7px 10px;
+      border-radius:999px;
+      font-weight:700;
+      letter-spacing:.2px;
     }
 
-    h1 { 
-        font-size: 24px;
-        margin-top: 0;
-        color: var(--primary);
-        text-align: center;
+    /* Cards */
+    .card{
+      background:var(--card);
+      border:1px solid rgba(226,232,240,.85);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px;
+      margin-bottom:14px;
+      overflow:hidden;
     }
 
-    label {
-        font-size: 12px;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #94a3b8;
-        display: block;
-        margin-bottom: 5px;
-        margin-left: 5px;
+    .title{
+      margin:0;
+      font-size:18px;
+      letter-spacing:-.3px;
+    }
+    .subtitle{
+      margin:6px 0 14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
     }
 
-    input, select, button { 
-        width: 100%; 
-        padding: 14px; 
-        margin-bottom: 15px;
-        border-radius: 12px; 
-        border: 1px solid #e2e8f0; 
-        font-size: 16px; 
-        box-sizing: border-box; /* Para que no se salgan de la pantalla */
+    .divider{
+      height:1px;
+      background:var(--border);
+      margin:16px 0;
     }
 
-    button { 
-        background-color: var(--primary); 
-        color: white; 
-        border: none; 
-        font-weight: bold; 
-        transition: transform 0.1s ease;
-        cursor: pointer;
+    label{
+      display:block;
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:800;
+      margin:14px 4px 6px;
     }
 
-    button:active {
-        transform: scale(0.98); /* Efecto de rebote al tocar en el móvil */
+    input, select{
+      width:100%;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1.8px solid var(--border);
+      background:#fff;
+      font-size:15px;
+      outline:none;
+      color:var(--text);
+      transition: all .15s ease;
+      -webkit-text-fill-color: var(--text);
+    }
+    input::placeholder{ color:#94a3b8; }
+    input:focus, select:focus{
+      border-color: rgba(14,165,233,.6);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
     }
 
-    #listaResultados {
-        text-align: center;
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
     }
 
-    .match-item {
-        background: #f0f9ff;
-        padding: 10px;
-        border-radius: 10px;
-        margin-top: 10px;
-        border-left: 4px solid var(--primary);
+    .btn{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      padding:14px 14px;
+      border-radius:16px;
+      font-weight:900;
+      font-size:15px;
+      letter-spacing:.2px;
+      transition: transform .06s ease, filter .15s ease;
+      margin-top:10px;
     }
-</style>
+    .btn:active{ transform: scale(.99); }
+
+    .btn-primary{
+      color:#fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 10px 25px rgba(14,165,233,.22);
+    }
+
+    .btn-green{
+      color:#fff;
+      background: linear-gradient(135deg, rgba(22,163,74,.95), rgba(21,128,61,.95));
+      box-shadow: 0 10px 25px rgba(22,163,74,.18);
+    }
+
+    .btn-ghost{
+      background:#f1f5f9;
+      color:#334155;
+      border:1px solid #e2e8f0;
+      box-shadow:none;
+    }
+
+    .btn-danger{
+      color:#fff;
+      background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(220,38,38,.95));
+      box-shadow: 0 10px 25px rgba(239,68,68,.16);
+      margin-top:14px;
+    }
+
+    /* Match list */
+    #listaResultados{ margin-top:12px; }
+    .match-item{
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:18px;
+      padding:12px;
+      margin-top:10px;
+      background: linear-gradient(180deg, rgba(14,165,233,.06), rgba(255,255,255,1) 55%);
+    }
+    .match-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .match-name{
+      font-weight:900;
+      letter-spacing:-.2px;
+      font-size:14px;
+      margin:0;
+    }
+    .badge{
+      font-size:11px;
+      font-weight:900;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(14,165,233,.22);
+      background: rgba(14,165,233,.10);
+      color: rgba(2,132,199,.95);
+      white-space:nowrap;
+    }
+    .match-meta{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      align-items:center;
+    }
+    .a-wa{
+      flex:1;
+      display:inline-block;
+      text-align:center;
+      padding:10px 12px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      color:white;
+      background: #22c55e;
+      box-shadow: 0 10px 20px rgba(34,197,94,.18);
+    }
+    .a-call{
+      display:inline-block;
+      text-align:center;
+      padding:10px 12px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      color: rgba(2,132,199,.95);
+      background: rgba(14,165,233,.10);
+      border:1px solid rgba(14,165,233,.18);
+      min-width:92px;
+    }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+      line-height:1.35;
+    }
+  </style>
 </head>
+
 <body>
-
-    <body>
-    <div class="container">
-        <div id="pantalla1" class="card">
-            <h1>Bienvenido a KB Match 🏖️</h1>
-            <p>¿Quién eres?</p>
-            <button onclick="irAPaso2('padre')" style="background-color: var(--primary);">Soy Padre / Madre</button>
-            <button onclick="irAPaso2('baby sitter')" style="background-color: var(--secondary);">Soy Baby Sitter</button>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">KB</div>
+        <div>
+          <h2>KB Match</h2>
+          <small>Padres ↔ Babysitters en Key Biscayne</small>
         </div>
-
-        <div id="pantalla2" class="card" style="display: none;">
-            <h1 id="tituloRegistro">Tus Datos</h1>
-            <input type="text" id="regNombre" placeholder="Nombre">
-            <input type="text" id="regApellido" placeholder="Apellido">
-            <input type="email" id="regEmail" placeholder="Email">
-            <input type="tel" id="regCelular" placeholder="Celular">
-            
-            <label>Edificio en Key Biscayne:</label>
-            <select id="regEdificio">
-                <option value="The Grand Bay">The Grand Bay</option>
-                <option value="Ocean Club">Ocean Club</option>
-                <option value="Key Colony">Key Colony</option>
-                <option value="Casa del Mar">Casa del Mar</option>
-                <option value="Mar Azul">Mar Azul</option>
-            </select>
-
-            <label>Disponibilidad:</label>
-            <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-                <select id="regDia">
-                    <option value="Lunes">Lunes</option>
-                    <option value="Martes">Martes</option>
-                    <option value="Miércoles">Miércoles</option>
-                    <option value="Jueves">Jueves</option>
-                    <option value="Viernes">Viernes</option>
-                    <option value="Sábado">Sábado</option>
-                    <option value="Domingo">Domingo</option>
-                </select>
-                <select id="regHorario">
-                    <option value="Mañana">Mañana</option>
-                    <option value="Tarde">Tarde</option>
-                    <option value="Noche">Noche</option>
-                </select>
-            </div>
-            
-            <button onclick="finalizarRegistro()" style="background-color: var(--secondary);">Finalizar Registro</button>
-            <button onclick="location.reload()" style="background-color: #ccc; color: black;">Volver</button>
-        </div>
-
-        <div id="pantalla3" class="card" style="display: none;">
-            <h1>Buscador de Matches 🏖️</h1>
-            <p id="infoUsuarioLogueado"></p>
-            
-            <label>Buscar en edificio:</label>
-            <select id="selectorEdificio">
-                <option value="The Grand Bay">The Grand Bay</option>
-                <option value="Ocean Club">Ocean Club</option>
-                <option value="Key Colony">Key Colony</option>
-                <option value="Casa del Mar">Casa del Mar</option>
-                <option value="Mar Azul">Mar Azul</option>
-            </select>
-            
-            <button onclick="mostrarMatches()">Buscar Match</button>
-            <div id="listaResultados"></div>
-            <button onclick="localStorage.clear(); location.reload();" style="margin-top: 20px; background-color: #ff5252;">Cerrar Sesión</button>
-        </div>
+      </div>
+      <div class="chip">MVP</div>
     </div>
+
+    <!-- Pantalla 1 -->
+    <div id="pantalla1" class="card">
+      <h1 class="title">Bienvenido 👋</h1>
+      <p class="subtitle">Crea tu perfil en 30 segundos y encuentra match por edificio, fecha y horario.</p>
+
+      <button class="btn btn-primary" onclick="irAPaso2('padre')">Soy Padre / Madre</button>
+      <button class="btn btn-green" onclick="irAPaso2('babysitter')">Soy Baby Sitter</button>
+
+      <div class="divider"></div>
+
+      <h1 class="title" style="font-size:16px;">¿Ya tienes cuenta?</h1>
+      <p class="subtitle" style="margin-bottom:10px;">Ingresa con tu email y contraseña.</p>
+
+      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="password" id="loginPassword" placeholder="Contraseña" />
+      <button class="btn btn-primary" onclick="login()">Ingresar</button>
+
+      <p class="hint">Tip: en este MVP la cuenta queda guardada en tu navegador (localStorage).</p>
+    </div>
+
+    <!-- Pantalla 2 -->
+    <div id="pantalla2" class="card" style="display:none;">
+      <h1 class="title" id="tituloRegistro">Tus Datos</h1>
+      <p class="subtitle">Estos datos se usan solo para coordinar el match.</p>
+
+      <div class="row">
+        <input type="text" id="regNombre" placeholder="Nombre" />
+        <input type="text" id="regApellido" placeholder="Apellido" />
+      </div>
+
+      <input type="email" id="regEmail" placeholder="Email" />
+      <input type="password" id="regPassword" placeholder="Crea una contraseña" />
+      <input type="tel" id="regCelular" placeholder="Celular (ej: 3055551234)" />
+
+<!-- Campos extra (solo Babysitter) -->
+<div id="babysitterExtras" style="display:none;">
+  <label>Tarifa por hora (USD)</label>
+  <input type="number" id="regTarifa" placeholder="Ej: 25" min="0" step="1"/>
+
+  <label>Años de experiencia</label>
+  <input type="number" id="regExperiencia" placeholder="Ej: 3" min="0" step="1"/>
+
+  <label>Bio corta</label>
+  <input type="text" id="regBio" placeholder="Ej: CPR, me encantan los niños, disponible fines de semana" />
+</div>
+
+      <label>Edificio en Key Biscayne</label>
+      <select id="regEdificio">
+        <option value="The Grand Bay">The Grand Bay</option>
+        <option value="Ocean Club">Ocean Club</option>
+        <option value="Key Colony">Key Colony</option>
+        <option value="Casa del Mar">Casa del Mar</option>
+        <option value="Mar Azul">Mar Azul</option>
+      </select>
+
+      <div class="row">
+        <div>
+          <label>Fecha</label>
+          <input type="date" id="regFecha" />
+        </div>
+        <div>
+          <label>Horario</label>
+          <select id="regHorario">
+            <option value="Mañana">Mañana</option>
+            <option value="Tarde">Tarde</option>
+            <option value="Noche">Noche</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="finalizarRegistro()">Finalizar Registro</button>
+      <button class="btn btn-ghost" onclick="volverInicio()">Volver</button>
+    </div>
+
+    <!-- Pantalla 3 -->
+    <div id="pantalla3" class="card" style="display:none;">
+      <h1 class="title">Matches</h1>
+      <p class="subtitle" id="infoUsuarioLogueado"></p>
+
+      <div style="margin-top:10px;">
+  <button class="btn btn-green" onclick="mostrarPublicar()">Publicar nueva fecha/horario</button>
+  <button class="btn btn-ghost" onclick="mostrarMisPublicaciones()">Mis publicaciones</button>
+</div>
+
+<!-- Panel Publicar -->
+<div id="panelPublicar" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+  <div class="row">
+    <div>
+      <label>Fecha</label>
+      <input type="date" id="postFecha" />
+    </div>
+    <div>
+      <label>Horario</label>
+      <select id="postHorario">
+        <option value="Mañana">Mañana</option>
+        <option value="Tarde">Tarde</option>
+        <option value="Noche">Noche</option>
+      </select>
+    </div>
+  </div>
+
+  <label>Edificio</label>
+  <select id="postEdificio">
+    <option value="The Grand Bay">The Grand Bay</option>
+    <option value="Ocean Club">Ocean Club</option>
+    <option value="Key Colony">Key Colony</option>
+    <option value="Casa del Mar">Casa del Mar</option>
+    <option value="Mar Azul">Mar Azul</option>
+  </select>
+
+  <button class="btn btn-green" onclick="publicarDisponibilidad()">Publicar</button>
+  <button class="btn btn-ghost" onclick="ocultarPaneles()">Cancelar</button>
+  <p class="hint">Esto crea una “disponibilidad” para matchear. No necesitas re-registrarte.</p>
+</div>
+
+<!-- Panel Mis publicaciones -->
+<div id="panelMisPublicaciones" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+  <div id="misPublicacionesList"></div>
+  <button class="btn btn-ghost" onclick="ocultarPaneles()">Cerrar</button>
+</div>
+
+
+      <label>Buscar en edificio</label>
+      <select id="selectorEdificio">
+        <option value="The Grand Bay">The Grand Bay</option>
+        <option value="Ocean Club">Ocean Club</option>
+        <option value="Key Colony">Key Colony</option>
+        <option value="Casa del Mar">Casa del Mar</option>
+        <option value="Mar Azul">Mar Azul</option>
+      </select>
+
+      <button class="btn btn-primary" onclick="mostrarMatches()">Buscar Match</button>
+
+      <div id="listaResultados"></div>
+
+      <button class="btn btn-danger" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+
     <script src="app.js"></script>
+  </div>
 </body>
 </html>
