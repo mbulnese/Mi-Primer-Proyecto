@@ -1,44 +1,30 @@
-// --- SISTEMA DE REGISTRO KEY BISCAYNE BABY SITTERS ---
+// --- SISTEMA DE MATCH KEY BISCAYNE V2 (Con Horarios) ---
 
-// 1. Datos del Usuario (Paso 1 y 2)
 const usuario = {
     nombre: "Martín",
-    email: "martin@email.com",
-    rol: "padre", // Opciones: "baby sitter" o "padre"
-    edificio: "The Grand Bay" // Ejemplo de edificio en Key Biscayne
+    rol: "padre",
+    edificio: "The Grand Bay",
+    horarios: ["tarde", "noche"] // Los horarios que necesitas
 };
 
-// 2. Lista de edificios en Key Biscayne (Paso 3)
-const edificiosKeyBiscayne = [
-    "The Grand Bay",
-    "Ocean Club",
-    "Key Colony",
-    "Commodore Club",
-    "Towers of Key Biscayne"
-    "Casa del Mar"
-    "Mar Azul"
+const baseDeDatos = [
+    { nombre: "Ana", rol: "baby sitter", edificio: "The Grand Bay", horarios: ["tarde"] },
+    { nombre: "Carla", rol: "baby sitter", edificio: "The Grand Bay", horarios: ["mañana"] },
+    { nombre: "Pedro", rol: "padre", edificio: "Key Colony", horarios: ["noche"] },
+    { nombre: "Lucía", rol: "baby sitter", edificio: "Ocean Club", horarios: ["tarde", "noche"] }
 ];
 
-// 3. Función de Lógica de Match
-function buscarMatch(usuarioActual, listaUsuarios) {
-    console.log(`Buscando matches para ${usuarioActual.nombre} en ${usuarioActual.edificio}...`);
-    
-    // Filtramos: que sea del mismo edificio y que tenga el rol opuesto
-    const matches = listaUsuarios.filter(u => 
-        u.edificio === usuarioActual.edificio && u.rol !== usuarioActual.rol
-    );
+function buscarMatchAvanzado(usuarioActual, listaUsuarios) {
+    return listaUsuarios.filter(u => {
+        const mismoEdificio = u.edificio === usuarioActual.edificio;
+        const rolOpuesto = u.rol !== usuarioActual.rol;
+        
+        // Esta línea busca si tienen al menos un horario en común
+        const coincidenciaHorario = u.horarios.some(h => usuarioActual.horarios.includes(h));
 
-    return matches;
+        return mismoEdificio && rolOpuesto && coincidenciaHorario;
+    });
 }
 
-// 4. Simulación de otros usuarios en la base de datos
-const baseDeDatos = [
-    { nombre: "Ana", rol: "baby sitter", edificio: "The Grand Bay" },
-    { nombre: "Pedro", rol: "padre", edificio: "Key Colony" },
-    { nombre: "Lucía", rol: "baby sitter", edificio: "Ocean Club" },
-    { nombre: "Carla", rol: "baby sitter", edificio: "The Grand Bay" }
-];
-
-// EJECUCIÓN
-const misMatches = buscarMatch(usuario, baseDeDatos);
-console.log("¡Matches encontrados!", misMatches);
+const resultados = buscarMatchAvanzado(usuario, baseDeDatos);
+console.log("Matches precisos encontrados:", resultados);
