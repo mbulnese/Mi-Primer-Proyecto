@@ -7,21 +7,19 @@
 
   <style>
     :root{
-      --primary:#0ea5e9;     /* sky-500 */
-      --primary2:#0284c7;    /* sky-600 */
-      --green:#16a34a;       /* green-600 */
-      --danger:#ef4444;      /* red-500 */
+      --primary:#0ea5e9;
+      --primary2:#0284c7;
+      --green:#16a34a;
+      --danger:#ef4444;
       --bg:#f6f7fb;
       --card:#ffffff;
-      --text:#0f172a;        /* slate-900 */
-      --muted:#64748b;       /* slate-500 */
-      --border:#e2e8f0;      /* slate-200 */
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
       --shadow:0 18px 40px rgba(15,23,42,.08);
       --radius:22px;
     }
-
     *{ box-sizing:border-box; }
-
     body{
       margin:0;
       min-height:100vh;
@@ -34,25 +32,9 @@
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     }
-
-    .container{
-      width:100%;
-      max-width:420px;
-      padding:20px 16px 28px;
-    }
-
-    /* Top bar */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin: 6px 2px 14px;
-    }
-    .brand{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
+    .container{ width:100%; max-width:420px; padding:20px 16px 28px; }
+    .topbar{ display:flex; align-items:center; justify-content:space-between; margin:6px 2px 14px; }
+    .brand{ display:flex; gap:10px; align-items:center; }
     .logo{
       width:42px;height:42px;border-radius:14px;
       display:grid;place-items:center;
@@ -60,19 +42,10 @@
       box-shadow: 0 10px 25px rgba(14,165,233,.25);
       color:white;
       font-size:20px;
+      font-weight:900;
     }
-    .brand h2{
-      margin:0;
-      font-size:16px;
-      line-height:1.1;
-      letter-spacing:-.2px;
-    }
-    .brand small{
-      color:var(--muted);
-      display:block;
-      margin-top:2px;
-      font-size:12px;
-    }
+    .brand h2{ margin:0; font-size:16px; line-height:1.1; letter-spacing:-.2px; }
+    .brand small{ color:var(--muted); display:block; margin-top:2px; font-size:12px; }
     .chip{
       font-size:12px;
       color:rgba(2,132,199,.95);
@@ -84,7 +57,6 @@
       letter-spacing:.2px;
     }
 
-    /* Cards */
     .card{
       background:var(--card);
       border:1px solid rgba(226,232,240,.85);
@@ -95,23 +67,9 @@
       overflow:hidden;
     }
 
-    .title{
-      margin:0;
-      font-size:18px;
-      letter-spacing:-.3px;
-    }
-    .subtitle{
-      margin:6px 0 14px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-
-    .divider{
-      height:1px;
-      background:var(--border);
-      margin:16px 0;
-    }
+    .title{ margin:0; font-size:18px; letter-spacing:-.3px; }
+    .subtitle{ margin:6px 0 14px; color:var(--muted); font-size:13px; line-height:1.35; }
+    .divider{ height:1px; background:var(--border); margin:16px 0; }
 
     label{
       display:block;
@@ -134,6 +92,7 @@
       color:var(--text);
       transition: all .15s ease;
       -webkit-text-fill-color: var(--text);
+      margin-top:10px;
     }
     input::placeholder{ color:#94a3b8; }
     input:focus, select:focus{
@@ -141,11 +100,7 @@
       box-shadow: 0 0 0 4px rgba(14,165,233,.12);
     }
 
-    .row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
     .btn{
       width:100%;
@@ -166,20 +121,17 @@
       background: linear-gradient(135deg, var(--primary), var(--primary2));
       box-shadow: 0 10px 25px rgba(14,165,233,.22);
     }
-
     .btn-green{
       color:#fff;
       background: linear-gradient(135deg, rgba(22,163,74,.95), rgba(21,128,61,.95));
       box-shadow: 0 10px 25px rgba(22,163,74,.18);
     }
-
     .btn-ghost{
       background:#f1f5f9;
       color:#334155;
       border:1px solid #e2e8f0;
       box-shadow:none;
     }
-
     .btn-danger{
       color:#fff;
       background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(220,38,38,.95));
@@ -187,80 +139,14 @@
       margin-top:14px;
     }
 
-    /* Match list */
-    #listaResultados{ margin-top:12px; }
+    .hint{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.35; }
+
     .match-item{
       border:1px solid rgba(226,232,240,.9);
       border-radius:18px;
       padding:12px;
       margin-top:10px;
       background: linear-gradient(180deg, rgba(14,165,233,.06), rgba(255,255,255,1) 55%);
-    }
-    .match-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
-    }
-    .match-name{
-      font-weight:900;
-      letter-spacing:-.2px;
-      font-size:14px;
-      margin:0;
-    }
-    .badge{
-      font-size:11px;
-      font-weight:900;
-      padding:6px 9px;
-      border-radius:999px;
-      border:1px solid rgba(14,165,233,.22);
-      background: rgba(14,165,233,.10);
-      color: rgba(2,132,199,.95);
-      white-space:nowrap;
-    }
-    .match-meta{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-    .actions{
-      display:flex;
-      gap:10px;
-      margin-top:10px;
-      align-items:center;
-    }
-    .a-wa{
-      flex:1;
-      display:inline-block;
-      text-align:center;
-      padding:10px 12px;
-      border-radius:14px;
-      text-decoration:none;
-      font-weight:900;
-      color:white;
-      background: #22c55e;
-      box-shadow: 0 10px 20px rgba(34,197,94,.18);
-    }
-    .a-call{
-      display:inline-block;
-      text-align:center;
-      padding:10px 12px;
-      border-radius:14px;
-      text-decoration:none;
-      font-weight:900;
-      color: rgba(2,132,199,.95);
-      background: rgba(14,165,233,.10);
-      border:1px solid rgba(14,165,233,.18);
-      min-width:92px;
-    }
-
-    .hint{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:8px;
-      line-height:1.35;
     }
   </style>
 </head>
@@ -281,7 +167,7 @@
     <!-- Pantalla 1 -->
     <div id="pantalla1" class="card">
       <h1 class="title">Bienvenido 👋</h1>
-      <p class="subtitle">Crea tu perfil en 30 segundos y encuentra match por edificio, fecha y horario.</p>
+      <p class="subtitle">Crea tu perfil y encuentra match por edificio, fecha y horario.</p>
 
       <button class="btn btn-primary" onclick="irAPaso2('padre')">Soy Padre / Madre</button>
       <button class="btn btn-green" onclick="irAPaso2('babysitter')">Soy Baby Sitter</button>
@@ -291,11 +177,11 @@
       <h1 class="title" style="font-size:16px;">¿Ya tienes cuenta?</h1>
       <p class="subtitle" style="margin-bottom:10px;">Ingresa con tu email y contraseña.</p>
 
-      <input type="email" id="loginEmail" placeholder="Email" />
-      <input type="password" id="loginPassword" placeholder="Contraseña" />
+      <input type="email" id="loginEmail" placeholder="Email" autocomplete="off" />
+      <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="off" />
       <button class="btn btn-primary" onclick="login()">Ingresar</button>
 
-      <p class="hint">Tip: en este MVP la cuenta queda guardada en tu navegador (localStorage).</p>
+      <p class="hint">Tip: en este MVP las cuentas se guardan en este navegador (localStorage).</p>
     </div>
 
     <!-- Pantalla 2 -->
@@ -304,25 +190,25 @@
       <p class="subtitle">Estos datos se usan solo para coordinar el match.</p>
 
       <div class="row">
-        <input type="text" id="regNombre" placeholder="Nombre" />
-        <input type="text" id="regApellido" placeholder="Apellido" />
+        <input type="text" id="regNombre" placeholder="Nombre" autocomplete="off" />
+        <input type="text" id="regApellido" placeholder="Apellido" autocomplete="off" />
       </div>
 
-      <input type="email" id="regEmail" placeholder="Email" />
-      <input type="password" id="regPassword" placeholder="Crea una contraseña" />
-      <input type="tel" id="regCelular" placeholder="Celular (ej: 3055551234)" />
+      <input type="email" id="regEmail" placeholder="Email" autocomplete="off" />
+      <input type="password" id="regPassword" placeholder="Crea una contraseña" autocomplete="new-password" />
+      <input type="tel" id="regCelular" placeholder="Celular (ej: 3055551234)" autocomplete="off" />
 
-<!-- Campos extra (solo Babysitter) -->
-<div id="babysitterExtras" style="display:none;">
-  <label>Tarifa por hora (USD)</label>
-  <input type="number" id="regTarifa" placeholder="Ej: 25" min="0" step="1"/>
+      <!-- Campos extra (solo Babysitter) -->
+      <div id="babysitterExtras" style="display:none;">
+        <label>Tarifa por hora (USD)</label>
+        <input type="number" id="regTarifa" placeholder="Ej: 25" min="0" step="1" autocomplete="off"/>
 
-  <label>Años de experiencia</label>
-  <input type="number" id="regExperiencia" placeholder="Ej: 3" min="0" step="1"/>
+        <label>Años de experiencia</label>
+        <input type="number" id="regExperiencia" placeholder="Ej: 3" min="0" step="1" autocomplete="off"/>
 
-  <label>Bio corta</label>
-  <input type="text" id="regBio" placeholder="Ej: CPR, me encantan los niños, disponible fines de semana" />
-</div>
+        <label>Bio corta</label>
+        <input type="text" id="regBio" placeholder="Ej: CPR, me encantan los niños, disponible fines de semana" autocomplete="off" />
+      </div>
 
       <label>Edificio en Key Biscayne</label>
       <select id="regEdificio">
@@ -358,47 +244,46 @@
       <p class="subtitle" id="infoUsuarioLogueado"></p>
 
       <div style="margin-top:10px;">
-  <button class="btn btn-green" onclick="mostrarPublicar()">Publicar nueva fecha/horario</button>
-  <button class="btn btn-ghost" onclick="mostrarMisPublicaciones()">Mis publicaciones</button>
-</div>
+        <button class="btn btn-green" onclick="mostrarPublicar()">Publicar nueva fecha/horario</button>
+        <button class="btn btn-ghost" onclick="mostrarMisPublicaciones()">Mis publicaciones</button>
+      </div>
 
-<!-- Panel Publicar -->
-<div id="panelPublicar" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
-  <div class="row">
-    <div>
-      <label>Fecha</label>
-      <input type="date" id="postFecha" />
-    </div>
-    <div>
-      <label>Horario</label>
-      <select id="postHorario">
-        <option value="Mañana">Mañana</option>
-        <option value="Tarde">Tarde</option>
-        <option value="Noche">Noche</option>
-      </select>
-    </div>
-  </div>
+      <!-- Panel Publicar -->
+      <div id="panelPublicar" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+        <div class="row">
+          <div>
+            <label>Fecha</label>
+            <input type="date" id="postFecha" />
+          </div>
+          <div>
+            <label>Horario</label>
+            <select id="postHorario">
+              <option value="Mañana">Mañana</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noche">Noche</option>
+            </select>
+          </div>
+        </div>
 
-  <label>Edificio</label>
-  <select id="postEdificio">
-    <option value="The Grand Bay">The Grand Bay</option>
-    <option value="Ocean Club">Ocean Club</option>
-    <option value="Key Colony">Key Colony</option>
-    <option value="Casa del Mar">Casa del Mar</option>
-    <option value="Mar Azul">Mar Azul</option>
-  </select>
+        <label>Edificio</label>
+        <select id="postEdificio">
+          <option value="The Grand Bay">The Grand Bay</option>
+          <option value="Ocean Club">Ocean Club</option>
+          <option value="Key Colony">Key Colony</option>
+          <option value="Casa del Mar">Casa del Mar</option>
+          <option value="Mar Azul">Mar Azul</option>
+        </select>
 
-  <button class="btn btn-green" onclick="publicarDisponibilidad()">Publicar</button>
-  <button class="btn btn-ghost" onclick="ocultarPaneles()">Cancelar</button>
-  <p class="hint">Esto crea una “disponibilidad” para matchear. No necesitas re-registrarte.</p>
-</div>
+        <button class="btn btn-green" onclick="publicarDisponibilidad()">Publicar</button>
+        <button class="btn btn-ghost" onclick="ocultarPaneles()">Cancelar</button>
+        <p class="hint">Esto crea una “disponibilidad” para matchear. No necesitas re-registrarte.</p>
+      </div>
 
-<!-- Panel Mis publicaciones -->
-<div id="panelMisPublicaciones" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
-  <div id="misPublicacionesList"></div>
-  <button class="btn btn-ghost" onclick="ocultarPaneles()">Cerrar</button>
-</div>
-
+      <!-- Panel Mis publicaciones -->
+      <div id="panelMisPublicaciones" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+        <div id="misPublicacionesList"></div>
+        <button class="btn btn-ghost" onclick="ocultarPaneles()">Cerrar</button>
+      </div>
 
       <label>Buscar en edificio</label>
       <select id="selectorEdificio">
@@ -410,11 +295,13 @@
       </select>
 
       <button class="btn btn-primary" onclick="mostrarMatches()">Buscar Match</button>
-
       <div id="listaResultados"></div>
 
       <button class="btn btn-danger" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
+    
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
 
     <script src="app.js"></script>
   </div>
