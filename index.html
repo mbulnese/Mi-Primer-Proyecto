@@ -111,10 +111,11 @@
       font-weight:900;
       font-size:15px;
       letter-spacing:.2px;
-      transition: transform .06s ease, filter .15s ease;
+      transition: transform .06s ease, filter .15s ease, opacity .15s ease;
       margin-top:10px;
     }
     .btn:active{ transform: scale(.99); }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
 
     .btn-primary{
       color:#fff;
@@ -148,6 +149,39 @@
       margin-top:10px;
       background: linear-gradient(180deg, rgba(14,165,233,.06), rgba(255,255,255,1) 55%);
     }
+
+    .toast{
+      display:none;
+      margin-top:12px;
+      border-radius:16px;
+      padding:12px 12px;
+      font-size:13px;
+      line-height:1.35;
+      border:1px solid rgba(226,232,240,.9);
+      background:#f8fafc;
+      color:#0f172a;
+    }
+    .toast.show{ display:block; }
+    .toast.ok{ border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.08); }
+    .toast.err{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.08); }
+    .small-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:10px;
+    }
+    .mini{
+      font-size:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #e2e8f0;
+      background:#f1f5f9;
+      color:#334155;
+      font-weight:900;
+      cursor:pointer;
+      white-space:nowrap;
+    }
   </style>
 </head>
 
@@ -167,7 +201,7 @@
     <!-- Pantalla 1 -->
     <div id="pantalla1" class="card">
       <h1 class="title">Bienvenido 👋</h1>
-      <p class="subtitle">Crea tu perfil y encuentra match por edificio, fecha y horario.</p>
+      <p class="subtitle">Crea tu perfil y luego publica una disponibilidad (fecha/horario) para encontrar match.</p>
 
       <button class="btn btn-primary" onclick="irAPaso2('padre')">Soy Padre / Madre</button>
       <button class="btn btn-green" onclick="irAPaso2('babysitter')">Soy Baby Sitter</button>
@@ -179,15 +213,23 @@
 
       <input type="email" id="loginEmail" placeholder="Email" autocomplete="off" />
       <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="off" />
-      <button class="btn btn-primary" onclick="login()">Ingresar</button>
 
-      <p class="hint">Tip: en este MVP las cuentas se guardan en este navegador (localStorage).</p>
+      <div class="small-actions">
+        <button class="mini" type="button" onclick="togglePassword('loginPassword')">👁 Ver</button>
+        <button class="mini" type="button" onclick="limpiarLogin()">🧽 Limpiar</button>
+      </div>
+
+      <button id="btnLogin" class="btn btn-primary" onclick="login()">Ingresar</button>
+
+      <div id="toast1" class="toast"></div>
+
+      <p class="hint">Tip: está en la nube (Supabase). Si tu proyecto exige confirmar email, te lo avisará.</p>
     </div>
 
     <!-- Pantalla 2 -->
     <div id="pantalla2" class="card" style="display:none;">
-      <h1 class="title" id="tituloRegistro">Tus Datos</h1>
-      <p class="subtitle">Estos datos se usan solo para coordinar el match.</p>
+      <h1 class="title" id="tituloRegistro">Crear perfil</h1>
+      <p class="subtitle">En este paso NO eliges fecha/horario. Eso se hace después al publicar disponibilidad.</p>
 
       <div class="row">
         <input type="text" id="regNombre" placeholder="Nombre" autocomplete="off" />
@@ -195,8 +237,13 @@
       </div>
 
       <input type="email" id="regEmail" placeholder="Email" autocomplete="off" />
-      <input type="password" id="regPassword" placeholder="Crea una contraseña" autocomplete="new-password" />
+      <input type="password" id="regPassword" placeholder="Crea una contraseña (mín. 6)" autocomplete="new-password" />
       <input type="tel" id="regCelular" placeholder="Celular (ej: 3055551234)" autocomplete="off" />
+
+      <div class="small-actions">
+        <button class="mini" type="button" onclick="togglePassword('regPassword')">👁 Ver</button>
+        <button class="mini" type="button" onclick="autofillDemo()">✨ Demo</button>
+      </div>
 
       <!-- Campos extra (solo Babysitter) -->
       <div id="babysitterExtras" style="display:none;">
@@ -207,10 +254,10 @@
         <input type="number" id="regExperiencia" placeholder="Ej: 3" min="0" step="1" autocomplete="off"/>
 
         <label>Bio corta</label>
-        <input type="text" id="regBio" placeholder="Ej: CPR, me encantan los niños, disponible fines de semana" autocomplete="off" />
+        <input type="text" id="regBio" placeholder="Ej: CPR, fines de semana, referencias" autocomplete="off" />
       </div>
 
-      <label>Edificio en Key Biscayne</label>
+      <label>Edificio (residencia)</label>
       <select id="regEdificio">
         <option value="The Grand Bay">The Grand Bay</option>
         <option value="Ocean Club">Ocean Club</option>
@@ -219,23 +266,10 @@
         <option value="Mar Azul">Mar Azul</option>
       </select>
 
-      <div class="row">
-        <div>
-          <label>Fecha</label>
-          <input type="date" id="regFecha" />
-        </div>
-        <div>
-          <label>Horario</label>
-          <select id="regHorario">
-            <option value="Mañana">Mañana</option>
-            <option value="Tarde">Tarde</option>
-            <option value="Noche">Noche</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="btn btn-green" onclick="finalizarRegistro()">Finalizar Registro</button>
+      <button id="btnRegistro" class="btn btn-green" onclick="finalizarRegistro()">Crear cuenta</button>
       <button class="btn btn-ghost" onclick="volverInicio()">Volver</button>
+
+      <div id="toast2" class="toast"></div>
     </div>
 
     <!-- Pantalla 3 -->
@@ -243,9 +277,11 @@
       <h1 class="title">Matches</h1>
       <p class="subtitle" id="infoUsuarioLogueado"></p>
 
+      <div id="toast3" class="toast"></div>
+
       <div style="margin-top:10px;">
-        <button class="btn btn-green" onclick="mostrarPublicar()">Publicar nueva fecha/horario</button>
-        <button class="btn btn-ghost" onclick="mostrarMisPublicaciones()">Mis publicaciones</button>
+        <button class="btn btn-green" onclick="mostrarPublicar()">Publicar disponibilidad</button>
+        <button class="btn btn-ghost" onclick="mostrarMisPublicaciones()">Mis disponibilidades</button>
       </div>
 
       <!-- Panel Publicar -->
@@ -274,9 +310,9 @@
           <option value="Mar Azul">Mar Azul</option>
         </select>
 
-        <button class="btn btn-green" onclick="publicarDisponibilidad()">Publicar</button>
+        <button id="btnPublicar" class="btn btn-green" onclick="publicarDisponibilidad()">Publicar</button>
         <button class="btn btn-ghost" onclick="ocultarPaneles()">Cancelar</button>
-        <p class="hint">Esto crea una “disponibilidad” para matchear. No necesitas re-registrarte.</p>
+        <p class="hint">Publica una disponibilidad y luego busca matches por edificio.</p>
       </div>
 
       <!-- Panel Mis publicaciones -->
@@ -285,7 +321,7 @@
         <button class="btn btn-ghost" onclick="ocultarPaneles()">Cerrar</button>
       </div>
 
-      <label>Buscar en edificio</label>
+      <label>Buscar matches en edificio</label>
       <select id="selectorEdificio">
         <option value="The Grand Bay">The Grand Bay</option>
         <option value="Ocean Club">Ocean Club</option>
@@ -299,11 +335,11 @@
 
       <button class="btn btn-danger" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
-    
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
 
-    <script src="app.js"></script>
   </div>
+
+  <!-- Supabase + app -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
 </body>
 </html>

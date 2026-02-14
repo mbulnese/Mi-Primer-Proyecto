@@ -1,18 +1,44 @@
+console.log("app.js cargado ✅");
+
 // =====================
 // KB Match - Supabase (Cloud) MVP
 // =====================
 
-const SUPABASE_URL = "https://tplsfwxuqjgnciufydtf.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwbHNmd3h1cWpnbmNpdWZ5ZHRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODAxMjIsImV4cCI6MjA4NjY1NjEyMn0.VPPsMeDpneLsDeQfCT2073JYgHzyxkPPB6nBncI3LVM";
+// ✅ Cliente global (NO declaramos "const supabase" para evitar redeclare)
+if (!window.supabaseClient) {
+  window.supabaseClient = window.supabase.createClient(
+    "https://tplsfwxuqjgnciufydtf.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwbHNmd3h1cWpnbmNpdWZ5ZHRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODAxMjIsImV4cCI6MjA4NjY1NjEyMn0.VPPsMeDpneLsDeQfCT2073JYgHzyxkPPB6nBncI3LVM",
+    { auth: { persistSession: false, autoRefreshToken: false } }
+  );
+}
 
-// IMPORTANTE: persistSession:false = no deja sesión guardada en computador compartido
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false }
-});
+let usuarioActual = null; // { id, email, rol, nombre, fecha, horario, edificioPerfil }
 
-let usuarioActual = null; // { id, email, rol, nombre, fecha, horario }
+// =======================
+// UI helpers
+// =======================
+function toast(id, msg, type = "") {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = "toast show" + (type ? ` ${type}` : "");
+  el.textContent = msg;
+}
 
-// ---------- Helpers UI ----------
+function clearToast(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = "toast";
+  el.textContent = "";
+}
+
+function setLoading(btnId, loading, label = null) {
+  const b = document.getElementById(btnId);
+  if (!b) return;
+  b.disabled = !!loading;
+  if (label) b.textContent = label;
+}
+
 function mostrarPantalla(id) {
   ["pantalla1", "pantalla2", "pantalla3"].forEach(p => {
     const el = document.getElementById(p);
@@ -47,23 +73,22 @@ function ratingMock(email) {
   return (base / 10).toFixed(1);
 }
 
-// Limpieza (para que NO queden datos del anterior en pantalla)
+// Limpieza (para que NO queden datos del anterior)
 function limpiarCamposPantalla1() {
   const e = document.getElementById("loginEmail");
   const p = document.getElementById("loginPassword");
   if (e) e.value = "";
   if (p) p.value = "";
+  clearToast("toast1");
 }
 
 function limpiarCamposRegistro() {
-  const ids = [
-    "regNombre","regApellido","regEmail","regPassword","regCelular",
-    "regTarifa","regExperiencia","regBio","regFecha"
-  ];
+  const ids = ["regNombre","regApellido","regEmail","regPassword","regCelular","regTarifa","regExperiencia","regBio"];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
+  clearToast("toast2");
 }
 
 function limpiarPantalla3() {
@@ -72,6 +97,7 @@ function limpiarPantalla3() {
   if (info) info.innerText = "";
   if (lista) lista.innerHTML = "";
   ocultarPaneles();
+  clearToast("toast3");
 }
 
 function ocultarPaneles() {
@@ -87,60 +113,116 @@ function toggleBabysitterExtras(rol) {
   box.style.display = (rol === "babysitter") ? "block" : "none";
 }
 
-// ---------- Supabase helpers ----------
+// Helpers visibles desde HTML
+window.togglePassword = function (id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.type = (el.type === "password") ? "text" : "password";
+};
+
+window.limpiarLogin = function () { limpiarCamposPantalla1(); };
+
+window.autofillDemo = function () {
+  // Solo para probar rápido
+  const rN = document.getElementById("regNombre");
+  const rA = document.getElementById("regApellido");
+  const rE = document.getElementById("regEmail");
+  const rP = document.getElementById("regPassword");
+  const rC = document.getElementById("regCelular");
+  if (rN) rN.value = "Demo";
+  if (rA) rA.value = "User";
+  if (rE) rE.value = `demo${Math.floor(Math.random()*9999)}@kbmatch.com`;
+  if (rP) rP.value = "123456";
+  if (rC) rC.value = "3055551234";
+};
+
+// =======================
+// Supabase helpers
+// =======================
 async function getProfile(userId) {
-  const { data, error } = await supabase
+  const { data, error } = await window.supabaseClient
     .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
+
   if (error) throw error;
   return data;
 }
 
+async function tryGetProfile(userId) {
+  const { data, error } = await window.supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data || null;
+}
+
 async function upsertProfile(profile) {
-  const { error } = await supabase.from("profiles").upsert(profile);
+  const { error } = await window.supabaseClient.from("profiles").upsert(profile);
   if (error) throw error;
 }
 
 async function getLatestPost(userId) {
-  const { data, error } = await supabase
+  const { data, error } = await window.supabaseClient
     .from("availability_posts")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(1);
+
   if (error) throw error;
   return data?.[0] || null;
 }
 
-async function createPost(post) {
-  const { error } = await supabase.from("availability_posts").insert(post);
-  if (error) throw error;
-}
-
 async function getMyPosts(userId) {
-  const { data, error } = await supabase
+  const { data, error } = await window.supabaseClient
     .from("availability_posts")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
+
   if (error) throw error;
   return data || [];
 }
 
+async function createPostNoDuplicate({ user_id, rol, edificio, fecha, horario }) {
+  // evita duplicados por código (además de unique constraint si la tienes)
+  const { data: existing, error: exErr } = await window.supabaseClient
+    .from("availability_posts")
+    .select("id")
+    .eq("user_id", user_id)
+    .eq("edificio", edificio)
+    .eq("fecha", fecha)
+    .eq("horario", horario)
+    .limit(1);
+
+  if (exErr) throw exErr;
+  if (existing && existing.length > 0) return { duplicated: true };
+
+  const { error } = await window.supabaseClient
+    .from("availability_posts")
+    .insert({ user_id, rol, edificio, fecha, horario });
+
+  if (error) throw error;
+  return { duplicated: false };
+}
+
 async function deletePost(postId, userId) {
-  const { error } = await supabase
+  const { error } = await window.supabaseClient
     .from("availability_posts")
     .delete()
     .eq("id", postId)
-    .eq("user_id", userId); // extra seguridad
+    .eq("user_id", userId);
+
   if (error) throw error;
 }
 
 async function fetchMatches({ edificio, fecha, horario, rolOpuesto }) {
-  // Trae posts del rol opuesto y además el perfil del dueño
-  const { data, error } = await supabase
+  const { data, error } = await window.supabaseClient
     .from("availability_posts")
     .select(`
       id, user_id, rol, edificio, fecha, horario, created_at,
@@ -157,48 +239,58 @@ async function fetchMatches({ edificio, fecha, horario, rolOpuesto }) {
 }
 
 // =======================
-// Registro
+// Registro (SIN fecha/horario)
 // =======================
-function irAPaso2(rol) {
-  usuarioActual = { rol }; // sesión temporal hasta registrarse
+window.irAPaso2 = function (rol) {
+  usuarioActual = { rol }; // temporal
   const t = document.getElementById("tituloRegistro");
-  if (t) t.innerText = "Registro: " + (rol === "padre" ? "Padre / Madre" : "Baby Sitter");
+  if (t) t.innerText = "Crear cuenta: " + (rol === "padre" ? "Padre / Madre" : "Baby Sitter");
 
   toggleBabysitterExtras(rol);
-  establecerFechaMinima("regFecha");
+  limpiarCamposRegistro();
   mostrarPantalla("pantalla2");
+};
+
+function pendingKey(email) {
+  return `kb_pending_profile_${(email || "").toLowerCase()}`;
 }
 
-async function finalizarRegistro() {
+function savePendingProfile(email, obj) {
+  try { localStorage.setItem(pendingKey(email), JSON.stringify(obj)); } catch {}
+}
+
+function loadPendingProfile(email) {
+  try {
+    const raw = localStorage.getItem(pendingKey(email));
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function clearPendingProfile(email) {
+  try { localStorage.removeItem(pendingKey(email)); } catch {}
+}
+
+window.finalizarRegistro = async function () {
+  clearToast("toast2");
+  setLoading("btnRegistro", true, "Creando cuenta...");
+
   try {
     const rol = usuarioActual?.rol;
-    if (!rol) { alert("Selecciona si eres Padre/Madre o Baby Sitter."); volverInicio(); return; }
+    if (!rol) { toast("toast2", "Selecciona tu rol primero.", "err"); return; }
 
     const nombre = document.getElementById("regNombre").value.trim();
     const apellido = document.getElementById("regApellido").value.trim();
     const email = document.getElementById("regEmail").value.trim().toLowerCase();
     const password = (document.getElementById("regPassword")?.value || "").trim();
     const celular = document.getElementById("regCelular").value.trim();
-
     const edificio = document.getElementById("regEdificio").value;
-    const fecha = document.getElementById("regFecha").value;
-    const horario = document.getElementById("regHorario").value;
 
-    if (!nombre || !apellido || !email || !password || !celular || !fecha || !horario) {
-      alert("Completa todos los campos (incluye contraseña y fecha).");
+    if (!nombre || !apellido || !email || !password || !celular) {
+      toast("toast2", "Completa nombre, apellido, email, contraseña y celular.", "err");
       return;
     }
-    if (!validarEmail(email)) { alert("Email inválido."); return; }
-    if (password.length < 6) { alert("La contraseña debe tener al menos 6 caracteres."); return; }
-
-    const hoy = new Date().toISOString().split("T")[0];
-    if (fecha < hoy) { alert("No puedes elegir una fecha pasada."); return; }
-
-    // 1) Crear usuario en Auth
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
-    if (signUpError) throw signUpError;
-    const user = signUpData.user;
-    if (!user) throw new Error("No se pudo crear el usuario.");
+    if (!validarEmail(email)) { toast("toast2", "Email inválido.", "err"); return; }
+    if (password.length < 6) { toast("toast2", "La contraseña debe tener al menos 6 caracteres.", "err"); return; }
 
     // Extras babysitter
     let tarifa = null, experiencia = null, bio = "";
@@ -208,8 +300,19 @@ async function finalizarRegistro() {
       bio = (document.getElementById("regBio")?.value || "").trim();
     }
 
-    // 2) Guardar perfil en la nube
-    await upsertProfile({
+    // 1) Crear usuario en Auth
+    const { data: signUpData, error: signUpError } =
+      await window.supabaseClient.auth.signUp({ email, password });
+
+    if (signUpError) throw signUpError;
+
+    const user = signUpData.user;
+    const session = signUpData.session; // puede ser null si hay email confirmation
+
+    if (!user) throw new Error("No se pudo crear el usuario.");
+
+    // Guardamos “pendiente” por si NO hay sesión (email confirmation ON)
+    const pending = {
       id: user.id,
       email,
       rol,
@@ -220,62 +323,71 @@ async function finalizarRegistro() {
       tarifa,
       experiencia,
       bio
-    });
+    };
 
-    // 3) Crear disponibilidad inicial (post)
-    // (si es duplicado, Supabase devuelve error por unique constraint)
-    try {
-      await createPost({
-        user_id: user.id,
-        rol,
-        edificio,
-        fecha,
-        horario
-      });
-    } catch (e) {
-      // Si ya existe, no pasa nada (pero en primera vez debería ser nuevo)
-      // Igual dejamos la sesión activa
-      console.warn("Post duplicado o error creando post:", e?.message || e);
+    // Si no hay sesión, NO podemos escribir a profiles (da 401). Guardamos y pedimos login luego.
+    if (!session) {
+      savePendingProfile(email, pending);
+      toast("toast2", "✅ Cuenta creada. Revisa tu email para confirmar (si aplica) y luego ingresa con tu email y contraseña.", "ok");
+      // Lo dejamos volver a pantalla 1
+      setTimeout(() => volverInicio(), 600);
+      return;
     }
 
-    // 4) “Sesión” en memoria (como persistSession=false, no queda guardado)
-    usuarioActual = { id: user.id, email, rol, nombre, fecha, horario };
+    // Si sí hay sesión, ya podemos escribir a tablas
+    await upsertProfile(pending);
+    clearPendingProfile(email);
 
-    // UI
-    mostrarPantalla("pantalla3");
-    document.getElementById("infoUsuarioLogueado").innerText =
-      `Hola ${nombre} 👋 Buscando matches para el ${fecha} (${horario})...`;
-
-    const selectorEd = document.getElementById("selectorEdificio");
-    if (selectorEd) selectorEd.value = edificio;
-
-    ocultarPaneles();
-    document.getElementById("listaResultados").innerHTML = "";
-    establecerFechaMinima("postFecha");
+    toast("toast2", "✅ Cuenta creada. Ahora ingresa con tu email y contraseña.", "ok");
+    setTimeout(() => volverInicio(), 700);
 
   } catch (err) {
-    alert(`Error: ${err.message || err}`);
+    const msg = (err.message || "").toLowerCase();
+    if (msg.includes("already") || msg.includes("registered")) {
+      toast("toast2", "Ese email ya está registrado. Intenta ingresar.", "err");
+      return;
+    }
+    toast("toast2", `Error: ${err.message || err}`, "err");
+  } finally {
+    setLoading("btnRegistro", false, "Crear cuenta");
   }
-}
+};
 
 // =======================
 // Login
 // =======================
-async function login() {
+window.login = async function () {
+  clearToast("toast1");
+  setLoading("btnLogin", true, "Ingresando...");
+
   try {
     const email = (document.getElementById("loginEmail")?.value || "").trim().toLowerCase();
     const password = (document.getElementById("loginPassword")?.value || "").trim();
 
-    if (!email || !password) { alert("Ingresa email y contraseña."); return; }
-    if (!validarEmail(email)) { alert("Email inválido."); return; }
+    if (!email || !password) { toast("toast1", "Ingresa email y contraseña.", "err"); return; }
+    if (!validarEmail(email)) { toast("toast1", "Email inválido.", "err"); return; }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } =
+      await window.supabaseClient.auth.signInWithPassword({ email, password });
+
     if (error) throw error;
 
     const user = data.user;
     if (!user) throw new Error("No se pudo iniciar sesión.");
 
-    const profile = await getProfile(user.id);
+    // Si el perfil no existe aún (caso email confirmation), lo creamos desde pending localStorage
+    let profile = await tryGetProfile(user.id);
+    if (!profile) {
+      const pending = loadPendingProfile(email);
+      if (pending && pending.id === user.id) {
+        await upsertProfile(pending);
+        clearPendingProfile(email);
+        profile = await getProfile(user.id);
+      } else {
+        throw new Error("Tu perfil aún no está creado en la base. Vuelve a registrarte o revisa las policies/RLS de profiles.");
+      }
+    }
+
     const lastPost = await getLatestPost(user.id);
 
     usuarioActual = {
@@ -284,7 +396,8 @@ async function login() {
       rol: profile.rol,
       nombre: profile.nombre,
       fecha: lastPost?.fecha || null,
-      horario: lastPost?.horario || null
+      horario: lastPost?.horario || null,
+      edificioPerfil: profile.edificio || null
     };
 
     mostrarPantalla("pantalla3");
@@ -292,46 +405,63 @@ async function login() {
     document.getElementById("listaResultados").innerHTML = "";
     establecerFechaMinima("postFecha");
 
+    // Default: edificio selector = edificio del perfil (más lógico)
+    const selectorEd = document.getElementById("selectorEdificio");
+    if (selectorEd && usuarioActual.edificioPerfil) selectorEd.value = usuarioActual.edificioPerfil;
+
+    // Y en publicar, por defecto igual
+    const postEd = document.getElementById("postEdificio");
+    if (postEd && usuarioActual.edificioPerfil) postEd.value = usuarioActual.edificioPerfil;
+
     const info = document.getElementById("infoUsuarioLogueado");
     if (lastPost) {
-      info.innerText = `Hola ${profile.nombre} 👋 Buscando matches para el ${lastPost.fecha} (${lastPost.horario})...`;
-      const selectorEd = document.getElementById("selectorEdificio");
-      if (selectorEd) selectorEd.value = lastPost.edificio;
+      info.innerText = `Hola ${profile.nombre} 👋 Tu última disponibilidad: ${lastPost.fecha} (${lastPost.horario}).`;
     } else {
-      info.innerText = `Hola ${profile.nombre} 👋 No tienes disponibilidad publicada aún.`;
+      info.innerText = `Hola ${profile.nombre} 👋 Publica una disponibilidad para empezar a matchear.`;
+      // Abrimos publicar automáticamente (saltito de UX)
+      mostrarPublicar();
     }
 
   } catch (err) {
-    alert(`Error: ${err.message || err}`);
+    toast("toast1", `Error: ${err.message || err}`, "err");
+  } finally {
+    setLoading("btnLogin", false, "Ingresar");
   }
-}
+};
 
 // =======================
-// Publicar / Mis publicaciones
+// Publicar / Mis disponibilidades
 // =======================
-function mostrarPublicar() {
-  if (!usuarioActual?.id) { alert("Debes ingresar."); volverInicio(); return; }
+window.mostrarPublicar = function () {
+  if (!usuarioActual?.id) { toast("toast3", "Debes ingresar.", "err"); volverInicio(); return; }
+  clearToast("toast3");
   ocultarPaneles();
   const p = document.getElementById("panelPublicar");
   if (p) p.style.display = "block";
   establecerFechaMinima("postFecha");
-}
 
-async function publicarDisponibilidad() {
+  // default edificio
+  const postEd = document.getElementById("postEdificio");
+  if (postEd && usuarioActual.edificioPerfil) postEd.value = usuarioActual.edificioPerfil;
+};
+
+window.publicarDisponibilidad = async function () {
+  clearToast("toast3");
+  setLoading("btnPublicar", true, "Publicando...");
+
   try {
-    if (!usuarioActual?.id) { alert("Debes ingresar."); volverInicio(); return; }
+    if (!usuarioActual?.id) { toast("toast3", "Debes ingresar.", "err"); volverInicio(); return; }
 
     const fecha = document.getElementById("postFecha")?.value;
     const horario = document.getElementById("postHorario")?.value;
     const edificio = document.getElementById("postEdificio")?.value;
 
-    if (!fecha || !horario || !edificio) { alert("Completa fecha, horario y edificio."); return; }
+    if (!fecha || !horario || !edificio) { toast("toast3", "Completa fecha, horario y edificio.", "err"); return; }
 
     const hoy = new Date().toISOString().split("T")[0];
-    if (fecha < hoy) { alert("No puedes elegir una fecha pasada."); return; }
+    if (fecha < hoy) { toast("toast3", "No puedes elegir una fecha pasada.", "err"); return; }
 
-    // Insert con UNIQUE (user_id, edificio, fecha, horario) => evita duplicados
-    await createPost({
+    const res = await createPostNoDuplicate({
       user_id: usuarioActual.id,
       rol: usuarioActual.rol,
       edificio,
@@ -339,11 +469,15 @@ async function publicarDisponibilidad() {
       horario
     });
 
+    if (res.duplicated) {
+      toast("toast3", "Esa disponibilidad ya existe.", "err");
+      return;
+    }
+
     usuarioActual.fecha = fecha;
     usuarioActual.horario = horario;
 
-    document.getElementById("infoUsuarioLogueado").innerText =
-      `Listo ✅ Publicaste ${fecha} (${horario}). Ahora puedes buscar matches.`;
+    toast("toast3", `✅ Publicado: ${fecha} (${horario}). Ahora busca matches abajo.`, "ok");
 
     const selectorEd = document.getElementById("selectorEdificio");
     if (selectorEd) selectorEd.value = edificio;
@@ -352,20 +486,17 @@ async function publicarDisponibilidad() {
     ocultarPaneles();
 
   } catch (err) {
-    // Si es duplicado, Supabase suele devolver un error de "duplicate key value violates unique constraint"
-    const msg = (err.message || "").toLowerCase();
-    if (msg.includes("duplicate") || msg.includes("unique")) {
-      alert("Esa disponibilidad ya existe.");
-      return;
-    }
-    alert(`Error: ${err.message || err}`);
+    toast("toast3", `Error: ${err.message || err}`, "err");
+  } finally {
+    setLoading("btnPublicar", false, "Publicar");
   }
-}
+};
 
-async function mostrarMisPublicaciones() {
+window.mostrarMisPublicaciones = async function () {
   try {
-    if (!usuarioActual?.id) { alert("Debes ingresar."); volverInicio(); return; }
+    if (!usuarioActual?.id) { toast("toast3", "Debes ingresar.", "err"); volverInicio(); return; }
 
+    clearToast("toast3");
     ocultarPaneles();
     const panel = document.getElementById("panelMisPublicaciones");
     const list = document.getElementById("misPublicacionesList");
@@ -376,7 +507,7 @@ async function mostrarMisPublicaciones() {
     const mine = await getMyPosts(usuarioActual.id);
 
     if (mine.length === 0) {
-      list.innerHTML = `<p style="color:#64748b; margin:0;">Aún no tienes publicaciones.</p>`;
+      list.innerHTML = `<p style="color:#64748b; margin:0;">Aún no tienes disponibilidades.</p>`;
       return;
     }
 
@@ -387,10 +518,7 @@ async function mostrarMisPublicaciones() {
             <div style="font-weight:900;">📅 ${p.fecha} · ⏰ ${p.horario}</div>
             <div style="color:#64748b; margin-top:4px;">📍 ${p.edificio}</div>
           </div>
-          <button class="btn btn-ghost" style="margin-top:0; padding:10px 12px; border-radius:14px;"
-            onclick="borrarPublicacion('${p.id}')">
-            Borrar
-          </button>
+          <button class="mini" style="margin-top:0;" onclick="borrarPublicacion('${p.id}')">Borrar</button>
         </div>
         <button class="btn btn-primary" style="margin-top:10px;" onclick="usarPublicacion('${p.id}')">
           Usar para buscar matches
@@ -399,42 +527,37 @@ async function mostrarMisPublicaciones() {
     `).join("");
 
   } catch (err) {
-    alert(`Error: ${err.message || err}`);
+    toast("toast3", `Error: ${err.message || err}`, "err");
   }
-}
+};
 
-async function borrarPublicacion(postId) {
+window.borrarPublicacion = async function (postId) {
   try {
     if (!usuarioActual?.id) return;
     await deletePost(postId, usuarioActual.id);
 
-    // Si borraste la activa, la “apagamos”
-    // (buscamos si coincide con la activa comparando con latest después)
     const last = await getLatestPost(usuarioActual.id);
     usuarioActual.fecha = last?.fecha || null;
     usuarioActual.horario = last?.horario || null;
 
     if (!usuarioActual.fecha) {
-      document.getElementById("infoUsuarioLogueado").innerText =
-        "Publicación borrada. Publica o elige otra disponibilidad para buscar matches.";
+      toast("toast3", "Publicación borrada. Publica o elige otra disponibilidad para buscar.", "ok");
     } else {
-      document.getElementById("infoUsuarioLogueado").innerText =
-        `Usando disponibilidad: ${usuarioActual.fecha} (${usuarioActual.horario}).`;
+      toast("toast3", `Usando disponibilidad: ${usuarioActual.fecha} (${usuarioActual.horario}).`, "ok");
     }
 
     await mostrarMisPublicaciones();
 
   } catch (err) {
-    alert(`Error: ${err.message || err}`);
+    toast("toast3", `Error: ${err.message || err}`, "err");
   }
-}
+};
 
-async function usarPublicacion(postId) {
+window.usarPublicacion = async function (postId) {
   try {
     if (!usuarioActual?.id) return;
 
-    // Traer ese post y usarlo como “activo”
-    const { data, error } = await supabase
+    const { data, error } = await window.supabaseClient
       .from("availability_posts")
       .select("*")
       .eq("id", postId)
@@ -446,8 +569,7 @@ async function usarPublicacion(postId) {
     usuarioActual.fecha = data.fecha;
     usuarioActual.horario = data.horario;
 
-    document.getElementById("infoUsuarioLogueado").innerText =
-      `Usando disponibilidad: ${data.fecha} (${data.horario}). Busca matches 👇`;
+    toast("toast3", `✅ Usando disponibilidad: ${data.fecha} (${data.horario}).`, "ok");
 
     const selectorEd = document.getElementById("selectorEdificio");
     if (selectorEd) selectorEd.value = data.edificio;
@@ -456,14 +578,14 @@ async function usarPublicacion(postId) {
     document.getElementById("listaResultados").innerHTML = "";
 
   } catch (err) {
-    alert(`Error: ${err.message || err}`);
+    toast("toast3", `Error: ${err.message || err}`, "err");
   }
-}
+};
 
 // =======================
-// Matches (desde la nube)
+// Matches
 // =======================
-async function mostrarMatches() {
+window.mostrarMatches = async function () {
   try {
     const edificioBusqueda = document.getElementById("selectorEdificio").value;
     const contenedor = document.getElementById("listaResultados");
@@ -563,38 +685,41 @@ async function mostrarMatches() {
     contenedor.innerHTML = cards.join("");
 
   } catch (err) {
-    alert(`Error: ${err.message || err}`);
+    toast("toast3", `Error: ${err.message || err}`, "err");
   }
-}
+};
 
 // =======================
 // Volver / Logout
 // =======================
-function volverInicio() {
+window.volverInicio = function () {
   usuarioActual = null;
   limpiarCamposRegistro();
   limpiarPantalla3();
   limpiarCamposPantalla1();
   mostrarPantalla("pantalla1");
-}
+};
 
-async function cerrarSesion() {
+window.cerrarSesion = async function () {
   usuarioActual = null;
   limpiarPantalla3();
   limpiarCamposPantalla1();
-  await supabase.auth.signOut(); // cierra token (aunque no persiste)
+  try { await window.supabaseClient.auth.signOut(); } catch {}
   mostrarPantalla("pantalla1");
-}
+};
 
 // =======================
-// Init (limpia al cargar)
+// Init
 // =======================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // fuerza logout por si quedó token
+  try { await window.supabaseClient.auth.signOut(); } catch {}
+
   usuarioActual = null;
   limpiarCamposPantalla1();
   limpiarCamposRegistro();
   limpiarPantalla3();
   mostrarPantalla("pantalla1");
-  establecerFechaMinima("regFecha");
+
   establecerFechaMinima("postFecha");
 });
