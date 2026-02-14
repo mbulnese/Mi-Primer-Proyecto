@@ -90,16 +90,23 @@
 </head>
 <body>
 
-    <<body>
+    <body>
     <div class="container">
-        <div class="card">
-            <h1>Registro KB 📝</h1>
-            <p>¡Únete a la comunidad!</p>
-            <input type="text" id="regNombre" placeholder="Nombre completo">
-            <select id="regRol">
-                <option value="baby sitter">Soy Baby Sitter</option>
-                <option value="padre">Soy Padre/Madre</option>
-            </select>
+        <div id="pantalla1" class="card">
+            <h1>Bienvenido a KB Match 🏖️</h1>
+            <p>¿Quién eres?</p>
+            <button onclick="irAPaso2('padre')" style="background-color: var(--primary);">Soy Padre / Madre</button>
+            <button onclick="irAPaso2('baby sitter')" style="background-color: var(--secondary);">Soy Baby Sitter</button>
+        </div>
+
+        <div id="pantalla2" class="card" style="display: none;">
+            <h1 id="tituloRegistro">Tus Datos</h1>
+            <input type="text" id="regNombre" placeholder="Nombre">
+            <input type="text" id="regApellido" placeholder="Apellido">
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="tel" id="regCelular" placeholder="Celular">
+            
+            <label>Edificio en Key Biscayne:</label>
             <select id="regEdificio">
                 <option value="The Grand Bay">The Grand Bay</option>
                 <option value="Ocean Club">Ocean Club</option>
@@ -107,11 +114,34 @@
                 <option value="Casa del Mar">Casa del Mar</option>
                 <option value="Mar Azul">Mar Azul</option>
             </select>
-            <button onclick="registrarUsuario()" style="background-color: #4caf50;">Registrarme</button>
+
+            <label>Disponibilidad:</label>
+            <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+                <select id="regDia">
+                    <option value="Lunes">Lunes</option>
+                    <option value="Martes">Martes</option>
+                    <option value="Miércoles">Miércoles</option>
+                    <option value="Jueves">Jueves</option>
+                    <option value="Viernes">Viernes</option>
+                    <option value="Sábado">Sábado</option>
+                    <option value="Domingo">Domingo</option>
+                </select>
+                <select id="regHorario">
+                    <option value="Mañana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noche">Noche</option>
+                </select>
+            </div>
+            
+            <button onclick="finalizarRegistro()" style="background-color: var(--secondary);">Finalizar Registro</button>
+            <button onclick="location.reload()" style="background-color: #ccc; color: black;">Volver</button>
         </div>
 
-        <div class="card">
-            <h1>Buscador 🏖️</h1>
+        <div id="pantalla3" class="card" style="display: none;">
+            <h1>Buscador de Matches 🏖️</h1>
+            <p id="infoUsuarioLogueado"></p>
+            
+            <label>Buscar en edificio:</label>
             <select id="selectorEdificio">
                 <option value="The Grand Bay">The Grand Bay</option>
                 <option value="Ocean Club">Ocean Club</option>
@@ -119,11 +149,12 @@
                 <option value="Casa del Mar">Casa del Mar</option>
                 <option value="Mar Azul">Mar Azul</option>
             </select>
-            <button onclick="mostrarMatches()">Buscar en mi edificio</button>
+            
+            <button onclick="mostrarMatches()">Buscar Match</button>
             <div id="listaResultados"></div>
+            <button onclick="localStorage.clear(); location.reload();" style="margin-top: 20px; background-color: #ff5252;">Cerrar Sesión</button>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
