@@ -2,8 +2,12 @@ const baseDeDatos = [
     { nombre: "Ana", rol: "baby sitter", edificio: "The Grand Bay" },
     { nombre: "Carla", rol: "baby sitter", edificio: "The Grand Bay" },
     { nombre: "Lucía", rol: "baby sitter", edificio: "Ocean Club" },
-    { nombre: "Marta", rol: "baby sitter", edificio: "Key Colony" }
+    { nombre: "Marta", rol: "baby sitter", edificio: "Key Colony" },
+    { nombre: "Sofia", rol: "baby sitter", edificio: "Casa del Mar" },
+    { nombre: "Diego", rol: "padre", edificio: "Mar Azul" }
 ];
+
+// ... (el resto de la función mostrarMatches se mantiene igual)
 
 function mostrarMatches() {
     // 1. Capturamos qué edificio eligió el usuario en el HTML
